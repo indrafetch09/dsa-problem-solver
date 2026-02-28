@@ -1,19 +1,30 @@
-const minimalNumber = 21218001;
-const maximalNumber = 21218225;
-const jumlahRak = 10;
+const MIN_EXEMPLAR = 21218001;
+const MAX_EXEMPLAR = 21218225;
+const NUM_RACKS = 10;
 
-const total = (maximalNumber - minimalNumber) + 1;
-const sisaExemplar = total / jumlahRak;
+function distributeExemplars(minNumber, maxNumber, numRacks) {
+  if (minNumber >= maxNumber || numRacks <= 0) {
+    throw new Error('Input salah');
+  }
 
-const kapasitasPerRak = Math.ceil(sisaExemplar);
+  const total = (maxNumber - minNumber) + 1;
+  const kapasitasPerRak = Math.floor(total / numRacks); // 22
+  const sisaExemplar = total % numRacks; // 5
 
-for (let rak = 1; rak <= jumlahRak; rak++) {
-  const nomorAwal = minimalNumber + (rak - 1) * kapasitasPerRak;
-  const nomorAkhir = nomorAwal + kapasitasPerRak - 1;
+  const results = [];
 
-  console.log(`Hasil kapasitas per rak: ${kapasitasPerRak}, \nhasil nomor exemplar per rak: ${nomorAwal} - ${nomorAkhir}`)
+  for (let rak = 1; rak <= numRacks; rak++) {
+    const kapasitas = rak <= sisaExemplar ? kapasitasPerRak + 1 : kapasitasPerRak;
+    const nomorAwal = minNumber + (rak - 1) * kapasitasPerRak;
+    const nomorAkhir = nomorAwal + kapasitasPerRak - 1;
+
+    results.push({ nomorAwal, nomorAkhir });
+    console.log(`Rak ${rak}: ${nomorAwal} - ${nomorAkhir} (${kapasitas}) items`)
+  }
+
+  return results;
 }
 
-console.log(`Total exemplar adalah ${total}`)
-console.log(`Kapasitas per rak adalah ${kapasitasPerRak}`);
-console.log(`Jumlah exemplar tersisa adalah ${sisaExemplar}`);
+const results = distributeExemplars(MIN_EXEMPLAR, MAX_EXEMPLAR, NUM_RACKS);
+console.log(`\nTotal Exemplar: ${(MAX_EXEMPLAR - MIN_EXEMPLAR) + 1}`);
+
