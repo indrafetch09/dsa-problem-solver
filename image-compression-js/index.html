@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Compression</title>
+</head>
+
+<body>
+    <div>
+        <h1 class="title">Compress your file here! </h1>
+        <input type="file" multiple class="image-file">
+    </div>
+    <div class="comparison">
+        <h2>Compare</h2>
+        <div>Before</div>
+        <ul id="before">
+            <li></li>
+        </ul>
+        <div>After</div>
+        <ul id="after">
+            <li></li>
+        </ul>
+    </div>
+
+</body>
+<script>
+
+    // Get image data
+    const compressImage = async (file, { quality = 1, type = file.type }) => {
+        const imageBitMap = await createImageBitmap(file);
+
+        const canvas = document.createElement('canvas');
+        canvas.width = imageBitMap.width;
+        canvas.height = imageBitMap.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(imageBitMap, 0, 0);
+
+        const blob = await new Promise((resolve) =>
+            canvas.toBlob(resolve, type, quality)
+        );
+        return new File([ blob ], file.name, {
+            type: blob.type
+        });
+    };
+
+    // Get file from html
+    const input = document.querySelector(".image-file");
+    input.addEventListener('change', async (e) => {
+        const { files } = e.target;
+
+        if (!files.length) return;
+
+        before.innerHTML = Array.from(files).map(file => `<li>${file.name} <b>${Math.round(file.size / 1000)}KB</li>`).join('')
+        const dataTransfer = new DataTransfer();
+
+        for (file of files) {
+            if (!file.type.startWith('image')) {
+                dataTransfer.items.add(file);
+                continue;
+            }
+
+            const compressedFile = await compressImage(file, {
+                quality: 0.5,
+                type: 'image/jpeg',
+            });
+            dataTransfer.items.add(compressedFile);
+        }
+        e.target.files = dataTransfer.files;
+        after.innerHTML = Array.from(dataTransfer.files).map(file => `<li>${file.name} <b>${Math.round(file.size / 1000)}KB</b></li>`).join('')
+        comparison.style.display = 'flex';
+    });
+</script>
+
+</html>
