@@ -56,13 +56,13 @@
         const dataTransfer = new DataTransfer();
 
         for (file of files) {
-            if (!file.type.startWith('image')) {
+            if (!file.type.startsWith('image')) {
                 dataTransfer.items.add(file);
                 continue;
             }
 
             const compressedFile = await compressImage(file, {
-                quality: 0.5,
+                quality: 0.2,
                 type: 'image/jpeg',
             });
             dataTransfer.items.add(compressedFile);
